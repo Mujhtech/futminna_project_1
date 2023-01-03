@@ -7,7 +7,6 @@ abstract class BaseAuthRepository {
   Stream<User?> get authStateChanges;
   Future<UserCredential?> signIn(String email, String password);
   Future<UserCredential?> signUp(String email, String password);
-  Future<UserCredential?> socialSignIn(OAuthCredential credential);
   User? getCurrentUser();
   Future<void> signOut();
   Future<void> resetPassword(String email);
@@ -29,17 +28,6 @@ class AuthRepository implements BaseAuthRepository {
   @override
   User? getCurrentUser() {
     return _ref.read(firebaseAuthProvider).currentUser;
-  }
-
-  @override
-  Future<UserCredential?> socialSignIn(OAuthCredential credential) async {
-    try {
-      return await _ref
-          .read(firebaseAuthProvider)
-          .signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      throw CustomException(message: e.message);
-    }
   }
 
   @override

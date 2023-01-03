@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class UserModel {
   String? uid;
   String? fullName;
@@ -66,7 +64,7 @@ class UserModel {
       phoneNumber: map['phoneNumber'],
       profileImage: map['profileImage'],
       lastLoggedIn: map['lastLoggedIn'] != null
-          ? (map['lastLoggedIn'] as Timestamp).toDate()
+          ? DateTime.fromMicrosecondsSinceEpoch(map['lastLoggedIn'])
           : DateTime.now(),
       loginType: map['loginType'],
     );

@@ -2,7 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:futminna_project_1/repositories/share.dart';
+import 'package:futminna_project_1/screens/splash.dart';
 import 'package:futminna_project_1/utils/common.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,11 +43,20 @@ class MyApp extends StatelessWidget {
           ),
           bottomNavigationBarTheme:
               const BottomNavigationBarThemeData(backgroundColor: Colors.white),
-          textTheme: const TextTheme(
-              headline1: TextStyle(color: Color(0xFF1B2124), fontSize: 32),
-              headline2: TextStyle(color: Color(0xFF1B2124), fontSize: 24),
-              bodyText1: TextStyle(color: Color(0xFF1B2124), fontSize: 16),
-              bodyText2: TextStyle(color: Color(0xFF1B2124), fontSize: 14))),
+          textTheme: TextTheme(
+            headline1: GoogleFonts.lato(
+                textStyle:
+                    const TextStyle(color: Color(0xFF1B2124), fontSize: 32)),
+            headline2: GoogleFonts.lato(
+                textStyle:
+                    const TextStyle(color: Color(0xFF1B2124), fontSize: 24)),
+            bodyText1: GoogleFonts.poppins(
+                textStyle:
+                    const TextStyle(color: Color(0xFF1B2124), fontSize: 16)),
+            bodyText2: GoogleFonts.poppins(
+                textStyle:
+                    const TextStyle(color: Color(0xFF1B2124), fontSize: 12)),
+          )),
       home: const SplashScreen(),
     );
   }

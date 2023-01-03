@@ -26,7 +26,7 @@ class PropertyRepository implements BasePropertyRepository {
           .read(firebaseFirestoreProvider)
           .property()
           .doc(id)
-          .set(item.toJson());
+          .set(item.toMap());
     } on FirebaseException catch (e) {
       throw CustomException(message: e.message);
     }

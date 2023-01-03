@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:food_truck_locator/ui/on_boarding.dart';
+import 'package:futminna_project_1/screens/auth/home.dart';
+import 'package:futminna_project_1/utils/common.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,9 +15,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 6), () {
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const OnBoardingScreen()));
+          MaterialPageRoute(builder: (context) => const AuthHomeScreen()));
     });
   }
 
@@ -27,50 +28,27 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned(
-              left: 250,
-              child: Image.asset(
-                'assets/images/Ellipse-1.png',
-                width: 200,
-                height: 200,
-              ),
-            ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/Food-Truck.png',
-                  width: 250,
-                  height: 250,
+                const Icon(
+                  Icons.place,
+                  size: 250,
+                  color: Commons.primaryColor,
+                ),
+                Center(
+                  child: Text(
+                    'Data Finder',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline1!
+                        .copyWith(fontWeight: FontWeight.w900, fontSize: 32),
+                  ),
                 ),
               ],
             ),
-            Positioned(
-              bottom: 30,
-              right: 250,
-              child: SizedBox(
-                child: Image.asset(
-                  'assets/images/Ellipse-2.png',
-                  width: 200,
-                  height: 200,
-                ),
-              ),
-            ),
-            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const SizedBox(
-                height: 320,
-              ),
-              Center(
-                child: Text(
-                  'Food Truck\nLocator',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline1!
-                      .copyWith(fontWeight: FontWeight.w900, fontSize: 32),
-                ),
-              ),
-            ]),
           ],
         ),
       ),

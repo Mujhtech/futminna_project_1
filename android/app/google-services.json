@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "447350646302",
+    "project_id": "fut-project1",
+    "storage_bucket": "fut-project1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447350646302:android:dd3a4520e89eeb0e0bf00f",
+        "android_client_info": {
+          "package_name": "com.mujhtech.futminna_project_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "447350646302-r0dchgqlioh3e4jlhq7sj6pbmitr3eg7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRkdOZylLDWdGjxq2ijbk59JY4Gra9AV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "447350646302-r0dchgqlioh3e4jlhq7sj6pbmitr3eg7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -95,7 +95,7 @@ class AuthController extends ChangeNotifier {
           .read(firebaseFirestoreProvider)
           .user()
           .doc(user.uid)
-          .set(user.toJson());
+          .set(user.toMap());
       _fsUser = user;
       _error = '';
       loading = false;
@@ -122,7 +122,7 @@ class AuthController extends ChangeNotifier {
       Reference ref = _ref
           .read(firebaseStorageProvider)
           .ref()
-          .child("users/user_" + _user!.uid);
+          .child("users/user_${_user!.uid}");
       UploadTask uploadTask = ref.putFile(file);
       final result = await uploadTask.then((res) async {
         return await res.ref.getDownloadURL();
@@ -131,7 +131,7 @@ class AuthController extends ChangeNotifier {
           .read(firebaseFirestoreProvider)
           .user()
           .doc(_user!.uid)
-          .update({'profile_picture': result});
+          .update({'profileImage': result});
       final user = await _ref
           .read(firebaseFirestoreProvider)
           .user()
