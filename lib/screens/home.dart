@@ -6,6 +6,7 @@ import 'package:futminna_project_1/controllers/auth.dart';
 import 'package:futminna_project_1/controllers/share.dart';
 import 'package:futminna_project_1/extension/screen.dart';
 import 'package:futminna_project_1/models/property.dart';
+import 'package:futminna_project_1/screens/property/list.dart';
 import 'package:futminna_project_1/utils/common.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -173,7 +174,12 @@ class HomeScreenState extends State<HomeScreen> {
                         height: 10,
                       ),
                       GestureDetector(
-                        onTap: () async {},
+                        onTap: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const PropertyList()));
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           width: context.screenWidth(1),
@@ -203,40 +209,7 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () async {},
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          width: context.screenWidth(1),
-                          height: 50,
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(4)),
-                              border: Border.all(
-                                  color: const Color(0xFFCCCCCC),
-                                  width: 1,
-                                  style: BorderStyle.solid)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Add Data',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(fontSize: 14),
-                              ),
-                              const Icon(Icons.place,
-                                  color: Commons.primaryColor)
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
+                        height: 30,
                       ),
                       GestureDetector(
                         onTap: () async {

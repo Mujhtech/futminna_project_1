@@ -1,61 +1,68 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 class PropertyModel {
   String id;
-  String? occupation;
+  String? category;
   String? name;
   String? featuredImage;
   String? bannerImage;
   String? location;
   String? latitude;
   String? longitude;
-  String? website;
-  String? userId;
+  String? phoneNumber;
+  String? about;
+  int? rating;
+  String? addedBy;
   List<String>? galleries;
   DateTime? createdAt;
   PropertyModel({
     required this.id,
-    this.occupation,
+    this.category,
     this.name,
     this.featuredImage,
     this.bannerImage,
     this.location,
     this.latitude,
     this.longitude,
-    this.website,
-    this.userId,
+    this.phoneNumber,
+    this.about,
+    this.rating,
+    this.addedBy,
     this.galleries,
     this.createdAt,
   });
 
   PropertyModel copyWith({
     String? id,
-    String? occupation,
+    String? category,
     String? name,
     String? featuredImage,
     String? bannerImage,
     String? location,
     String? latitude,
     String? longitude,
-    String? website,
-    String? userId,
+    String? phoneNumber,
+    String? about,
+    int? rating,
+    String? addedBy,
     List<String>? galleries,
     DateTime? createdAt,
   }) {
     return PropertyModel(
       id: id ?? this.id,
-      occupation: occupation ?? this.occupation,
+      category: category ?? this.category,
       name: name ?? this.name,
       featuredImage: featuredImage ?? this.featuredImage,
       bannerImage: bannerImage ?? this.bannerImage,
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
-      website: website ?? this.website,
-      userId: userId ?? this.userId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      about: about ?? this.about,
+      rating: rating ?? this.rating,
+      addedBy: addedBy ?? this.addedBy,
       galleries: galleries ?? this.galleries,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -64,15 +71,17 @@ class PropertyModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'occupation': occupation,
+      'category': category,
       'name': name,
       'featuredImage': featuredImage,
       'bannerImage': bannerImage,
       'location': location,
       'latitude': latitude,
       'longitude': longitude,
-      'website': website,
-      'userId': userId,
+      'phoneNumber': phoneNumber,
+      'about': about,
+      'rating': rating,
+      'addedBy': addedBy,
       'galleries': galleries,
       'createdAt': createdAt?.millisecondsSinceEpoch,
     };
@@ -80,21 +89,22 @@ class PropertyModel {
 
   factory PropertyModel.fromMap(Map<String, dynamic> map) {
     return PropertyModel(
-      id: map['id'] ?? '',
-      occupation: map['occupation'],
-      name: map['name'],
-      featuredImage: map['featuredImage'],
-      bannerImage: map['bannerImage'],
-      location: map['location'],
-      latitude: map['latitude'],
-      longitude: map['longitude'],
-      website: map['website'],
-      userId: map['userId'],
-      galleries: List<String>.from(map['galleries']),
-      createdAt: map['createdAt'] != null
-          ? (map['createdAt'] as Timestamp).toDate()
-          : null,
-    );
+        id: map['id'] ?? '',
+        category: map['category'],
+        name: map['name'],
+        featuredImage: map['featuredImage'],
+        bannerImage: map['bannerImage'],
+        location: map['location'],
+        latitude: map['latitude'],
+        longitude: map['longitude'],
+        phoneNumber: map['phoneNumber'],
+        about: map['about'],
+        rating: map['rating']?.toInt(),
+        addedBy: map['addedBy'],
+        galleries: List<String>.from(map['galleries']),
+        createdAt: map['createdAt'] != null
+            ? DateTime.fromMicrosecondsSinceEpoch(map['createdAt'])
+            : DateTime.now());
   }
 
   String toJson() => json.encode(toMap());
@@ -104,7 +114,7 @@ class PropertyModel {
 
   @override
   String toString() {
-    return 'PropertyModel(id: $id, occupation: $occupation, name: $name, featuredImage: $featuredImage, bannerImage: $bannerImage, location: $location, latitude: $latitude, longitude: $longitude, website: $website, userId: $userId, galleries: $galleries, createdAt: $createdAt)';
+    return 'PropertyModel(id: $id, category: $category, name: $name, featuredImage: $featuredImage, bannerImage: $bannerImage, location: $location, latitude: $latitude, longitude: $longitude, phoneNumber: $phoneNumber, about: $about, rating: $rating, addedBy: $addedBy, galleries: $galleries, createdAt: $createdAt)';
   }
 
   @override
@@ -113,15 +123,17 @@ class PropertyModel {
 
     return other is PropertyModel &&
         other.id == id &&
-        other.occupation == occupation &&
+        other.category == category &&
         other.name == name &&
         other.featuredImage == featuredImage &&
         other.bannerImage == bannerImage &&
         other.location == location &&
         other.latitude == latitude &&
         other.longitude == longitude &&
-        other.website == website &&
-        other.userId == userId &&
+        other.phoneNumber == phoneNumber &&
+        other.about == about &&
+        other.rating == rating &&
+        other.addedBy == addedBy &&
         listEquals(other.galleries, galleries) &&
         other.createdAt == createdAt;
   }
@@ -129,15 +141,17 @@ class PropertyModel {
   @override
   int get hashCode {
     return id.hashCode ^
-        occupation.hashCode ^
+        category.hashCode ^
         name.hashCode ^
         featuredImage.hashCode ^
         bannerImage.hashCode ^
         location.hashCode ^
         latitude.hashCode ^
         longitude.hashCode ^
-        website.hashCode ^
-        userId.hashCode ^
+        phoneNumber.hashCode ^
+        about.hashCode ^
+        rating.hashCode ^
+        addedBy.hashCode ^
         galleries.hashCode ^
         createdAt.hashCode;
   }

@@ -50,16 +50,16 @@ class PropertyController extends ChangeNotifier {
   //   return trucks;
   // }
 
-  List<PropertyModel> filterTruckByUser(String userId) {
-    List<PropertyModel> filterTruck = [];
+  List<PropertyModel> filterByUser(String userId) {
+    List<PropertyModel> filter = [];
     if (_properties != null && _properties!.isNotEmpty) {
       for (final data in _properties!) {
-        if (data.userId == userId) {
-          filterTruck.add(data);
+        if (data.addedBy == userId) {
+          filter.add(data);
         }
       }
     }
-    return filterTruck;
+    return filter;
   }
 
   Future<void> retrieve() async {
@@ -78,17 +78,18 @@ class PropertyController extends ChangeNotifier {
   }
 
   Future<bool> create(
-      String id,
       String userId,
       String name,
       String occupation,
       String location,
-      String website,
+      String phoneNumber,
       double latitude,
       double longitude,
       String bannerImage,
       String featuredImage,
-      List<String> galleries) async {
+      String description,
+      List<String> galleries,
+      {int rating = 1}) async {
     try {
       loading = true;
       notifyListeners();
@@ -97,14 +98,16 @@ class PropertyController extends ChangeNotifier {
       PropertyModel item = PropertyModel(
           id: id,
           name: name,
-          occupation: occupation,
+          category: occupation,
+          about: description,
           location: location,
           bannerImage: bannerImage,
           featuredImage: featuredImage,
-          website: website,
+          phoneNumber: phoneNumber,
           latitude: '$latitude',
           longitude: '$longitude',
-          userId: userId,
+          rating: rating,
+          addedBy: userId,
           galleries: galleries,
           createdAt: DateTime.now());
       await _ref.read(propertyRepository).create(id: id, item: item);
@@ -126,26 +129,30 @@ class PropertyController extends ChangeNotifier {
       String name,
       String occupation,
       String location,
-      String website,
+      String phoneNumber,
       double latitude,
       double longitude,
       String bannerImage,
       String featuredImage,
-      List<String> galleries) async {
+      String description,
+      List<String> galleries,
+      {int rating = 1}) async {
     try {
       loading = true;
       notifyListeners();
       PropertyModel item = PropertyModel(
           id: id,
           name: name,
-          occupation: occupation,
+          category: occupation,
+          about: description,
           location: location,
           bannerImage: bannerImage,
           featuredImage: featuredImage,
-          website: website,
+          phoneNumber: phoneNumber,
           latitude: '$latitude',
           longitude: '$longitude',
-          userId: userId,
+          addedBy: userId,
+          rating: rating,
           galleries: galleries,
           createdAt: DateTime.now());
       await _ref.read(propertyRepository).create(id: id, item: item);

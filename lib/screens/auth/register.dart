@@ -83,6 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (v!.isEmpty) {
                                 return 'Fullname Field is required';
                               }
+                              return null;
                             },
                             controller: fullname,
                             cursorColor: Commons.primaryColor,
@@ -128,6 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               } else if (!regex.hasMatch(e)) {
                                 return 'Email address is not valid';
                               }
+                              return null;
                             },
                             controller: email,
                             cursorColor: Commons.primaryColor,
@@ -169,6 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (v!.isEmpty) {
                                 return 'Phone Number Field is required';
                               }
+                              return null;
                             },
                             controller: phone,
                             cursorColor: Commons.primaryColor,
@@ -210,6 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (p!.isEmpty) {
                                 return 'Password Field is required';
                               }
+                              return null;
                             },
                             controller: password,
                             cursorColor: Commons.primaryColor,
