@@ -6,6 +6,7 @@ import 'package:futminna_project_1/models/property.dart';
 import 'package:futminna_project_1/providers/firebase.dart';
 import 'package:futminna_project_1/repositories/custom_exception.dart';
 import 'package:futminna_project_1/repositories/property.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final propertyController = ChangeNotifierProvider<PropertyController>((ref) {
@@ -15,43 +16,43 @@ final propertyController = ChangeNotifierProvider<PropertyController>((ref) {
 class PropertyController extends ChangeNotifier {
   final Ref _ref;
   String? error;
-  List<PropertyModel>? _properties;
+  List<ServiceModel>? _properties;
   bool loading = false;
 
-  List<PropertyModel>? get properties => _properties;
+  List<ServiceModel>? get properties => _properties;
 
   PropertyController(this._ref) {
     retrieve();
   }
 
-  PropertyModel filterTruckbyId(String id) {
+  ServiceModel filterTruckbyId(String id) {
     return _properties!.firstWhere((truck) => truck.id == id);
   }
 
-  // Set<Marker> maps(customIcon, onClickMarker) {
-  //   Set<Marker> trucks = {};
+  Set<Marker> maps(customIcon, onClickMarker) {
+    Set<Marker> properties = {};
 
-  //   if (_properties!.isNotEmpty) {
-  //     Set<Marker> datas = _properties!
-  //         .map((e) => Marker(
-  //             onTap: () {
-  //               onClickMarker(e);
-  //             },
-  //             markerId: MarkerId(e.title!),
-  //             icon: customIcon,
-  //             infoWindow: InfoWindow(title: e.title),
-  //             position: LatLng(
-  //                 double.parse(e.latitude!), double.parse(e.longitude!))))
-  //         .toSet();
+    if (_properties != null && _properties!.isNotEmpty) {
+      Set<Marker> datas = _properties!
+          .map((e) => Marker(
+              onTap: () {
+                onClickMarker(e);
+              },
+              markerId: MarkerId(e.name!),
+              icon: customIcon,
+              infoWindow: InfoWindow(title: e.name),
+              position: LatLng(
+                  double.parse(e.latitude!), double.parse(e.longitude!))))
+          .toSet();
 
-  //     trucks.addAll(datas);
-  //   }
+      properties.addAll(datas);
+    }
 
-  //   return trucks;
-  // }
+    return properties;
+  }
 
-  List<PropertyModel> filterByUser(String userId) {
-    List<PropertyModel> filter = [];
+  List<ServiceModel> filterByUser(String userId) {
+    List<ServiceModel> filter = [];
     if (_properties != null && _properties!.isNotEmpty) {
       for (final data in _properties!) {
         if (data.addedBy == userId) {
@@ -80,7 +81,7 @@ class PropertyController extends ChangeNotifier {
   Future<bool> create(
       String userId,
       String name,
-      String occupation,
+      String category,
       String location,
       String phoneNumber,
       double latitude,
@@ -88,17 +89,16 @@ class PropertyController extends ChangeNotifier {
       String bannerImage,
       String featuredImage,
       String description,
-      List<String> galleries,
       {int rating = 1}) async {
     try {
       loading = true;
       notifyListeners();
       String id =
           _ref.read(firebaseFirestoreProvider).property().doc().id.toString();
-      PropertyModel item = PropertyModel(
+      ServiceModel item = ServiceModel(
           id: id,
           name: name,
-          category: occupation,
+          category: category,
           about: description,
           location: location,
           bannerImage: bannerImage,
@@ -108,7 +108,6 @@ class PropertyController extends ChangeNotifier {
           longitude: '$longitude',
           rating: rating,
           addedBy: userId,
-          galleries: galleries,
           createdAt: DateTime.now());
       await _ref.read(propertyRepository).create(id: id, item: item);
       loading = false;
@@ -127,7 +126,7 @@ class PropertyController extends ChangeNotifier {
       String id,
       String userId,
       String name,
-      String occupation,
+      String category,
       String location,
       String phoneNumber,
       double latitude,
@@ -135,15 +134,14 @@ class PropertyController extends ChangeNotifier {
       String bannerImage,
       String featuredImage,
       String description,
-      List<String> galleries,
       {int rating = 1}) async {
     try {
       loading = true;
       notifyListeners();
-      PropertyModel item = PropertyModel(
+      ServiceModel item = ServiceModel(
           id: id,
           name: name,
-          category: occupation,
+          category: category,
           about: description,
           location: location,
           bannerImage: bannerImage,
@@ -153,9 +151,8 @@ class PropertyController extends ChangeNotifier {
           longitude: '$longitude',
           addedBy: userId,
           rating: rating,
-          galleries: galleries,
           createdAt: DateTime.now());
-      await _ref.read(propertyRepository).create(id: id, item: item);
+      await _ref.read(propertyRepository).update(id: id, item: item);
       loading = false;
       await retrieve();
       notifyListeners();

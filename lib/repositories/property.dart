@@ -6,10 +6,10 @@ import 'package:futminna_project_1/repositories/custom_exception.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 abstract class BasePropertyRepository {
-  Future<List<PropertyModel>> get();
-  Future<void> create({required String id, required PropertyModel item});
+  Future<List<ServiceModel>> get();
+  Future<void> create({required String id, required ServiceModel item});
   Future<void> remove({required String id});
-  Future<void> update({required String id, required PropertyModel item});
+  Future<void> update({required String id, required ServiceModel item});
 }
 
 final propertyRepository =
@@ -20,7 +20,7 @@ class PropertyRepository implements BasePropertyRepository {
   const PropertyRepository(this.ref);
 
   @override
-  Future<void> create({required String id, required PropertyModel item}) async {
+  Future<void> create({required String id, required ServiceModel item}) async {
     try {
       await ref
           .read(firebaseFirestoreProvider)
@@ -33,13 +33,13 @@ class PropertyRepository implements BasePropertyRepository {
   }
 
   @override
-  Future<List<PropertyModel>> get() async {
+  Future<List<ServiceModel>> get() async {
     try {
-      List<PropertyModel> trucks = [];
+      List<ServiceModel> trucks = [];
       final snap = await ref.read(firebaseFirestoreProvider).property().get();
       for (var doc in snap.docs) {
-        PropertyModel truck =
-            PropertyModel.fromMap(doc.data()! as Map<String, dynamic>);
+        ServiceModel truck =
+            ServiceModel.fromMap(doc.data()! as Map<String, dynamic>);
         trucks.add(truck);
       }
       return trucks;
@@ -58,7 +58,7 @@ class PropertyRepository implements BasePropertyRepository {
   }
 
   @override
-  Future<void> update({required String id, required PropertyModel item}) async {
+  Future<void> update({required String id, required ServiceModel item}) async {
     try {
       await ref
           .read(firebaseFirestoreProvider)

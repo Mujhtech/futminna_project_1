@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:futminna_project_1/controllers/auth.dart';
 import 'package:futminna_project_1/controllers/property.dart';
 import 'package:futminna_project_1/extension/screen.dart';
@@ -11,9 +12,10 @@ import 'package:futminna_project_1/utils/common.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rating_dialog/rating_dialog.dart';
 
 class PropertyAdd extends StatefulWidget {
-  final PropertyModel? property;
+  final ServiceModel? property;
   const PropertyAdd({super.key, this.property});
 
   @override
@@ -29,18 +31,22 @@ class _PropertyAddState extends State<PropertyAdd> {
   final formKey = GlobalKey<FormState>();
   String category = 'Other';
   final ImagePicker _picker = ImagePicker();
+  double rating = 1;
+
+  final List<String> categories = ['Mechanic', 'Hospital', 'Other'];
 
   init() {
     if (widget.property != null) {
       title = TextEditingController(text: widget.property?.name ?? '');
       location = TextEditingController(text: widget.property?.location ?? '');
-      //description = TextEditingController(text: widget.property?. ?? '');
+      description = TextEditingController(text: widget.property?.about ?? '');
 
       phoneNumber =
           TextEditingController(text: widget.property?.phoneNumber ?? '');
 
       lantitude = double.tryParse(widget.property?.latitude ?? '');
       longitude = double.tryParse(widget.property?.longitude ?? '');
+      rating = widget.property?.rating?.toDouble() ?? 1;
 
       setState(() {});
     }
@@ -54,18 +60,30 @@ class _PropertyAddState extends State<PropertyAdd> {
 
   File? bannerImage;
   File? featuredImage;
-  List<File>? galleries;
   double? lantitude, longitude;
 
-  Future<void> updateGallery(List<XFile> images) async {
-    List<File> files = [];
-    if (images.isNotEmpty) {
-      for (final image in images) {
-        files.add(File(image.path));
-      }
-      setState(() {
-        galleries = [...files];
-      });
+  ImageProvider bannerImageProvider() {
+    if (bannerImage != null) {
+      return FileImage(bannerImage!);
+    } else if (widget.property != null &&
+        widget.property!.bannerImage != null &&
+        widget.property!.bannerImage!.isNotEmpty) {
+      return CachedNetworkImageProvider(widget.property!.bannerImage!);
+    } else {
+      return const CachedNetworkImageProvider(
+          "https://via.placeholder.com/150");
+    }
+  }
+
+  ImageProvider? featuredImageProvider() {
+    if (featuredImage != null) {
+      return FileImage(featuredImage!);
+    } else if (widget.property != null &&
+        widget.property!.featuredImage != null &&
+        widget.property!.featuredImage!.isNotEmpty) {
+      return CachedNetworkImageProvider(widget.property!.featuredImage!);
+    } else {
+      return null;
     }
   }
 
@@ -76,6 +94,31 @@ class _PropertyAddState extends State<PropertyAdd> {
       final pp = ref.watch(propertyController);
       final auth = ref.watch(authControllerProvider);
       final connect = ref.watch(connectivityController);
+
+      final ratingDialog = RatingDialog(
+        initialRating: rating,
+        title: Text('Rating',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headline1),
+        message: Text(
+          'Tap a star to set your rating.',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyText2,
+        ),
+        enableComment: false,
+        submitButtonText: 'Submit',
+        submitButtonTextStyle: Theme.of(context)
+            .textTheme
+            .bodyText2!
+            .copyWith(color: Commons.primaryColor, fontWeight: FontWeight.w600),
+        onCancelled: () {
+          //print('cancelled');
+        },
+        onSubmitted: (response) async {
+          rating = response.rating;
+          setState(() {});
+        },
+      );
 
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -123,12 +166,10 @@ class _PropertyAddState extends State<PropertyAdd> {
                     width: context.screenWidth(1),
                     height: 160,
                     padding: const EdgeInsets.all(50),
-                    decoration: const BoxDecoration(
-                        color: Color(0xFFEFEFEF),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFFEFEFEF),
                         image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: CachedNetworkImageProvider(
-                                "https://via.placeholder.com/150"))),
+                            fit: BoxFit.cover, image: bannerImageProvider())),
                     child: Align(
                         alignment: Alignment.center,
                         child: Container(
@@ -138,19 +179,33 @@ class _PropertyAddState extends State<PropertyAdd> {
                           ),
                           width: 50,
                           height: 50,
-                          child: bannerImage != null
-                              ? Image.file(
-                                  bannerImage!,
-                                  width: 40,
-                                  height: 40,
-                                )
-                              : const Center(
-                                  child: Icon(
-                                    Icons.photo_camera,
-                                    size: 20,
-                                    color: Color(0xFFCCCCCC),
-                                  ),
-                                ),
+                          child: GestureDetector(
+                            onTap: () async {
+                              if (!await Commons.checkStoragePermission()) {
+                                if (!await Commons.requestStoragePermission()) {
+                                  return;
+                                }
+                              }
+                              try {
+                                final XFile? image = await _picker.pickImage(
+                                    source: ImageSource.gallery);
+                                if (image!.name.isNotEmpty) {
+                                  setState(() {
+                                    bannerImage = File(image.path);
+                                  });
+                                }
+                              } catch (err) {
+                                //print(err.toString());
+                              }
+                            },
+                            child: const Center(
+                              child: Icon(
+                                Icons.photo_camera,
+                                size: 20,
+                                color: Color(0xFFCCCCCC),
+                              ),
+                            ),
+                          ),
                         )),
                   ),
                 ],
@@ -209,16 +264,16 @@ class _PropertyAddState extends State<PropertyAdd> {
                                     //print(err.toString());
                                   }
                                 },
-                                child: featuredImage != null
-                                    ? Image.file(
-                                        featuredImage!,
+                                child: featuredImageProvider() != null
+                                    ? Image(
+                                        image: featuredImageProvider()!,
                                         width: 200,
                                         height: 200,
                                       )
                                     : const Icon(
-                                        Icons.place,
+                                        Icons.photo_camera,
                                         size: 50,
-                                        color: Color(0xFF656565),
+                                        color: Color(0xFFCCCCCC),
                                       ),
                               ),
                             ),
@@ -416,65 +471,78 @@ class _PropertyAddState extends State<PropertyAdd> {
                           const SizedBox(
                             height: 10,
                           ),
-                          Text(
-                            'Add Images',
-                            style: Theme.of(context).textTheme.bodyText1,
+                          Container(
+                            decoration: BoxDecoration(
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor),
+                            width: context.screenWidth(1),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Category',
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                DropdownButton<String>(
+                                  // Initial Value
+                                  value: category,
+
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+
+                                  // Array list of items
+                                  items: categories.map((String items) {
+                                    return DropdownMenuItem(
+                                      value: items,
+                                      child: Text(items),
+                                    );
+                                  }).toList(),
+                                  borderRadius: BorderRadius.circular(8),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      category = newValue!;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(
                             height: 10,
                           ),
                           GestureDetector(
-                            onTap: () async {
-                              if (!await Commons.checkStoragePermission()) {
-                                if (!await Commons.requestStoragePermission()) {
-                                  return;
-                                }
-                              }
-                              try {
-                                final List<XFile> images =
-                                    await _picker.pickMultiImage();
-                                await updateGallery(images);
-                              } catch (err) {
-                                //print(err.toString());
-                              }
-                            },
-                            child: Container(
-                              height: 100,
-                              width: context.screenWidth(1),
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFFFFF),
-                                border: Border.all(
-                                    width: 1,
-                                    color: const Color(0xFFCCCCCC),
-                                    style: BorderStyle.solid),
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Text(
-                                      galleries != null && galleries!.isNotEmpty
-                                          ? '${galleries!.length} images selected'
-                                          : 'Browse',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                              color: Commons.primaryColor,
-                                              fontSize: 18),
-                                    ),
+                            onTap: () => showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (context) => ratingDialog,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text('Add a review',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: Commons.primaryColor)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                RatingBarIndicator(
+                                  rating: rating.toDouble(),
+                                  itemBuilder: (context, index) => const Icon(
+                                    Icons.star,
+                                    color: Commons.primaryColor,
                                   ),
-                                  Center(
-                                    child: Text(
-                                      'Note: One of the selected images will be used for banner',
-                                      textAlign: TextAlign.center,
-                                      style:
-                                          Theme.of(context).textTheme.bodyText2,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                  itemCount: 5,
+                                  itemSize: 20.0,
+                                  direction: Axis.horizontal,
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -507,22 +575,30 @@ class _PropertyAddState extends State<PropertyAdd> {
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           return;
                         }
-                        if (featuredImage == null ||
-                            featuredImage!.path.isEmpty) {
+                        if ((featuredImage == null ||
+                                featuredImage!.path.isEmpty) &&
+                            widget.property?.featuredImage == null) {
                           const snackBar = SnackBar(
                               content: Text('Please select featured image'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           return;
                         }
-                        if (galleries == null || galleries!.length < 2) {
-                          const snackBar = SnackBar(
-                              content: Text('Please minimum of 2 images'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          return;
-                        }
                         try {
-                          final featured = await pp.uploadFile(featuredImage!);
-                          final gallery = await pp.uploadFiles(galleries!);
+                          String featured = '';
+                          String banner = '';
+
+                          if (featuredImage != null) {
+                            featured = await pp.uploadFile(featuredImage!);
+                          } else {
+                            featured = widget.property?.featuredImage ?? '';
+                          }
+
+                          if (bannerImage != null) {
+                            banner = await pp.uploadFile(bannerImage!);
+                          } else {
+                            banner = widget.property?.bannerImage ?? '';
+                          }
+
                           if (widget.property != null) {
                             await pp.update(
                                 widget.property!.id,
@@ -533,10 +609,10 @@ class _PropertyAddState extends State<PropertyAdd> {
                                 phoneNumber.text.trim(),
                                 lantitude!,
                                 longitude!,
-                                description.text.trim(),
-                                gallery[0],
+                                banner,
                                 featured,
-                                gallery);
+                                description.text.trim(),
+                                rating: rating.toInt());
                           } else {
                             await pp.create(
                                 auth.user!.uid!,
@@ -546,10 +622,10 @@ class _PropertyAddState extends State<PropertyAdd> {
                                 phoneNumber.text.trim(),
                                 lantitude!,
                                 longitude!,
-                                description.text.trim(),
-                                gallery[0],
                                 featured,
-                                gallery);
+                                banner,
+                                description.text.trim(),
+                                rating: rating.toInt());
                           }
 
                           clearForm();
@@ -612,7 +688,7 @@ class _PropertyAddState extends State<PropertyAdd> {
                                       ),
                                       Center(
                                         child: Text(
-                                          'Your data has been addedd\nsuccessfully',
+                                          'Your data has been ${widget.property != null ? 'updated' : 'addedd'}\nsuccessfully',
                                           textAlign: TextAlign.center,
                                           style: Theme.of(context)
                                               .textTheme

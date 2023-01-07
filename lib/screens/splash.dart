@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
                 Center(
                   child: Text(
-                    'Data Finder',
+                    'Services Finder',
                     textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme

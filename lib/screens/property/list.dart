@@ -62,7 +62,7 @@ class _PropertyListState extends State<PropertyList> {
                     child: PropertyCard(
                       page: 1,
                       title: p.name!,
-                      bannerImage: p.bannerImage!,
+                      bannerImage: p.featuredImage!,
                     ),
                   );
                 })

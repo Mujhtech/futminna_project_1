@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-class PropertyModel {
+class ServiceModel {
   String id;
   String? category;
   String? name;
@@ -15,9 +15,8 @@ class PropertyModel {
   String? about;
   int? rating;
   String? addedBy;
-  List<String>? galleries;
   DateTime? createdAt;
-  PropertyModel({
+  ServiceModel({
     required this.id,
     this.category,
     this.name,
@@ -30,11 +29,10 @@ class PropertyModel {
     this.about,
     this.rating,
     this.addedBy,
-    this.galleries,
     this.createdAt,
   });
 
-  PropertyModel copyWith({
+  ServiceModel copyWith({
     String? id,
     String? category,
     String? name,
@@ -47,10 +45,9 @@ class PropertyModel {
     String? about,
     int? rating,
     String? addedBy,
-    List<String>? galleries,
     DateTime? createdAt,
   }) {
-    return PropertyModel(
+    return ServiceModel(
       id: id ?? this.id,
       category: category ?? this.category,
       name: name ?? this.name,
@@ -63,7 +60,6 @@ class PropertyModel {
       about: about ?? this.about,
       rating: rating ?? this.rating,
       addedBy: addedBy ?? this.addedBy,
-      galleries: galleries ?? this.galleries,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -82,13 +78,12 @@ class PropertyModel {
       'about': about,
       'rating': rating,
       'addedBy': addedBy,
-      'galleries': galleries,
       'createdAt': createdAt?.millisecondsSinceEpoch,
     };
   }
 
-  factory PropertyModel.fromMap(Map<String, dynamic> map) {
-    return PropertyModel(
+  factory ServiceModel.fromMap(Map<String, dynamic> map) {
+    return ServiceModel(
         id: map['id'] ?? '',
         category: map['category'],
         name: map['name'],
@@ -101,7 +96,6 @@ class PropertyModel {
         about: map['about'],
         rating: map['rating']?.toInt(),
         addedBy: map['addedBy'],
-        galleries: List<String>.from(map['galleries']),
         createdAt: map['createdAt'] != null
             ? DateTime.fromMicrosecondsSinceEpoch(map['createdAt'])
             : DateTime.now());
@@ -109,19 +103,19 @@ class PropertyModel {
 
   String toJson() => json.encode(toMap());
 
-  factory PropertyModel.fromJson(String source) =>
-      PropertyModel.fromMap(json.decode(source));
+  factory ServiceModel.fromJson(String source) =>
+      ServiceModel.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'PropertyModel(id: $id, category: $category, name: $name, featuredImage: $featuredImage, bannerImage: $bannerImage, location: $location, latitude: $latitude, longitude: $longitude, phoneNumber: $phoneNumber, about: $about, rating: $rating, addedBy: $addedBy, galleries: $galleries, createdAt: $createdAt)';
+    return 'ServiceModel(id: $id, category: $category, name: $name, featuredImage: $featuredImage, bannerImage: $bannerImage, location: $location, latitude: $latitude, longitude: $longitude, phoneNumber: $phoneNumber, about: $about, rating: $rating, addedBy: $addedBy, createdAt: $createdAt)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is PropertyModel &&
+    return other is ServiceModel &&
         other.id == id &&
         other.category == category &&
         other.name == name &&
@@ -134,7 +128,6 @@ class PropertyModel {
         other.about == about &&
         other.rating == rating &&
         other.addedBy == addedBy &&
-        listEquals(other.galleries, galleries) &&
         other.createdAt == createdAt;
   }
 
@@ -152,7 +145,6 @@ class PropertyModel {
         about.hashCode ^
         rating.hashCode ^
         addedBy.hashCode ^
-        galleries.hashCode ^
         createdAt.hashCode;
   }
 }
