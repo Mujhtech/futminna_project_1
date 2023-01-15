@@ -9,8 +9,9 @@ abstract class BaseAuthRepository {
   Future<UserCredential?> signUp(String email, String password);
   User? getCurrentUser();
   Future<void> signOut();
-  Future<void> resetPassword(String email);
-  Future<void> verifyResetCode(String code, String password);
+  Future<void> forgotPassword(String email, ActionCodeSettings action);
+  Future<void> resetPassword(String code, String password);
+  Future<String> verifyResetCode(String code);
 }
 
 final authRepositoryProvider =
@@ -64,18 +65,27 @@ class AuthRepository implements BaseAuthRepository {
   }
 
   @override
-  Future<void> resetPassword(email) async {
+  Future<void> forgotPassword(email, action) async {
     try {
       await _ref
           .read(firebaseAuthProvider)
-          .sendPasswordResetEmail(email: email);
+          .sendPasswordResetEmail(email: email, actionCodeSettings: action);
     } on FirebaseAuthException catch (e) {
       throw CustomException(message: e.message);
     }
   }
 
   @override
-  Future<void> verifyResetCode(String code, String password) async {
+  Future<String> verifyResetCode(String code) async {
+    try {
+     return await _ref.read(firebaseAuthProvider).verifyPasswordResetCode(code);
+    } on FirebaseAuthException catch (e) {
+      throw CustomException(message: e.message);
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String code, String password) async {
     try {
       await _ref
           .read(firebaseAuthProvider)

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:futminna_project_1/screens/auth/home.dart';
+import 'package:futminna_project_1/screens/dynamic_state.dart';
 import 'package:futminna_project_1/utils/common.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(const Duration(seconds: 6), () {
       Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => const AuthHomeScreen()));
+          MaterialPageRoute(builder: (context) => const DynamicState()));
     });
   }
 

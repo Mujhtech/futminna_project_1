@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:futminna_project_1/controllers/auth.dart';
+import 'package:futminna_project_1/controllers/dynamic_link.dart';
 import 'package:futminna_project_1/extension/screen.dart';
 import 'package:futminna_project_1/repositories/connectivity.dart';
-import 'package:futminna_project_1/screens/auth/forgot.dart';
-import 'package:futminna_project_1/screens/auth/register.dart';
-import 'package:futminna_project_1/screens/home.dart';
+import 'package:futminna_project_1/screens/auth/login.dart';
 import 'package:futminna_project_1/utils/common.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController email = TextEditingController();
+  TextEditingController npassword = TextEditingController();
   TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, _) {
       final auth = ref.watch(authControllerProvider);
+      final dy = ref.watch(dynamicLinkProvider);
       final connect = ref.watch(connectivityController);
       return WillPopScope(
         onWillPop: () async => !auth.loading,
@@ -43,13 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (auth.loading) {
                         return;
                       }
-                      Navigator.push(
+                      Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const RegisterScreen()));
+                              builder: (context) => const LoginScreen()));
                     },
                     child: Text(
-                      'Don’t have an account?',
+                      'Already have an account?',
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1!
@@ -61,15 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sign In',
+                      'Set new password',
                       style: Theme.of(context)
                           .textTheme
                           .headline1!
                           .copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      'Welcome, sign in to continue',
-                      style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ],
                 ),
@@ -81,55 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         TextFormField(
-                          validator: (String? e) {
-                            RegExp regex = RegExp(
-                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
-                            if (e!.isEmpty) {
-                              return 'Email Address Field is required';
-                            } else if (!regex.hasMatch(e)) {
-                              return 'Email address is not valid';
-                            }
-                            return null;
-                          },
-                          controller: email,
-                          cursorColor: Commons.primaryColor,
-                          keyboardType: TextInputType.emailAddress,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(fontSize: 14),
-                          decoration: InputDecoration(
-                            enabledBorder:
-                                Theme.of(context).inputDecorationTheme.border,
-                            focusedBorder:
-                                Theme.of(context).inputDecorationTheme.border,
-                            focusedErrorBorder:
-                                Theme.of(context).inputDecorationTheme.border,
-                            hintText: 'Email Address',
-                            hintStyle:
-                                const TextStyle(color: Color(0xFFAAAAAA)),
-                            errorBorder:
-                                Theme.of(context).inputDecorationTheme.border,
-                            errorStyle: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: Colors.red),
-                            fillColor: Theme.of(context)
-                                .inputDecorationTheme
-                                .fillColor,
-                            filled: true,
-                          ),
-                          autocorrect: false,
-                          autofocus: false,
-                          obscureText: false,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        TextFormField(
                           validator: (p) {
                             if (p!.isEmpty) {
-                              return 'Password Field is required';
+                              return 'Field is required';
                             }
                             return null;
                           },
@@ -147,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Theme.of(context).inputDecorationTheme.border,
                             focusedErrorBorder:
                                 Theme.of(context).inputDecorationTheme.border,
-                            hintText: 'Password',
+                            hintText: 'New Password',
                             hintStyle:
                                 const TextStyle(color: Color(0xFFAAAAAA)),
                             errorBorder:
@@ -168,27 +118,46 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: InkWell(
-                            onTap: () {
-                              if (auth.loading) {
-                                return;
-                              }
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ForgotPasswordScreen()));
-                            },
-                            child: Text(
-                              'Forgot password?',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(color: Commons.primaryColor),
-                            ),
+                        TextFormField(
+                          validator: (p) {
+                            if (p!.isEmpty) {
+                              return 'Field is required';
+                            } else if (p != password.text.trim()) {
+                              return 'Confirm password not match';
+                            }
+                            return null;
+                          },
+                          controller: npassword,
+                          cursorColor: Commons.primaryColor,
+                          keyboardType: TextInputType.visiblePassword,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(fontSize: 14),
+                          decoration: InputDecoration(
+                            enabledBorder:
+                                Theme.of(context).inputDecorationTheme.border,
+                            focusedBorder:
+                                Theme.of(context).inputDecorationTheme.border,
+                            focusedErrorBorder:
+                                Theme.of(context).inputDecorationTheme.border,
+                            hintText: 'Confirm New Password',
+                            hintStyle:
+                                const TextStyle(color: Color(0xFFAAAAAA)),
+                            errorBorder:
+                                Theme.of(context).inputDecorationTheme.border,
+                            errorStyle: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(color: Colors.red),
+                            fillColor: Theme.of(context)
+                                .inputDecorationTheme
+                                .fillColor,
+                            filled: true,
                           ),
+                          autocorrect: false,
+                          autofocus: false,
+                          obscureText: true,
                         ),
                       ],
                     )),
@@ -220,19 +189,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 .showSnackBar(snackBar);
                             return;
                           }
-                          if (!await auth.signIn(
-                              email.text.trim(), password.text.trim())) {
+                          if (!await auth.resetPassword(
+                              dy.extractOobcode(), password.text.trim())) {
                             final snackBar =
                                 SnackBar(content: Text(auth.error!));
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
                             return;
                           }
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const HomeScreen()),
-                              (Route<dynamic> route) => false);
+                          const snackBar = SnackBar(
+                              content: Text('Password reset successfully'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
                         elevation: 0,
                         color: Commons.primaryColor,
@@ -244,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 53,
                           alignment: Alignment.center,
                           child: Text(
-                            'Sign In',
+                            'Forgot Password',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!

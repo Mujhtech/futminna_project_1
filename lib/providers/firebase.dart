@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -11,3 +12,6 @@ final firebaseFirestoreProvider =
 
 final firebaseStorageProvider =
     Provider<FirebaseStorage>((ref) => FirebaseStorage.instance);
+
+final dynamicLinks =
+    Provider<FirebaseDynamicLinks>((ref) => FirebaseDynamicLinks.instance);

@@ -282,4 +282,59 @@ class AuthController extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<bool> forgotPassword(String email) async {
+    try {
+      loading = true;
+      notifyListeners();
+      final action = ActionCodeSettings(
+          url: 'https://abubakradisa.page.link?passwordReset=$email',
+          androidInstallApp: true,
+          handleCodeInApp: true,
+          androidPackageName: 'com.mujhtech.futminna_project_1',
+          iOSBundleId: 'com.mujhtech.futminnaProject1');
+      await _ref.read(authRepositoryProvider).forgotPassword(email, action);
+      loading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      loading = false;
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<bool> resetPassword(String code, String newPassword) async {
+    try {
+      loading = true;
+      notifyListeners();
+      final userEmail =
+          await _ref.read(authRepositoryProvider).verifyResetCode(code);
+      await _ref.read(authRepositoryProvider).resetPassword(code, newPassword);
+
+      var collectionRef = await _ref
+          .read(firebaseFirestoreProvider)
+          .user()
+          .where('email', isEqualTo: userEmail)
+          .limit(1)
+          .get();
+      if (collectionRef.docs.isNotEmpty) {
+        await _ref
+            .read(firebaseFirestoreProvider)
+            .user()
+            .doc(collectionRef.docs[0].id)
+            .update({'password': newPassword});
+      }
+
+      loading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      loading = false;
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
 }
