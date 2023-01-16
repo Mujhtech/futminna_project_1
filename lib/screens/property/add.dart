@@ -33,7 +33,12 @@ class _PropertyAddState extends State<PropertyAdd> {
   final ImagePicker _picker = ImagePicker();
   double rating = 1;
 
-  final List<String> categories = ['Mechanic', 'Hospital', 'Other'];
+  final List<String> categories = [
+    'Mechanic',
+    'Hospital',
+    'Filling Station',
+    'Other'
+  ];
 
   init() {
     if (widget.property != null) {
@@ -732,6 +737,7 @@ class _PropertyAddState extends State<PropertyAdd> {
                               );
                             },
                           );
+                       
                         } catch (err) {
                           //
                         }

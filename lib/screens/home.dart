@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -68,6 +69,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   void onClickMarker(ServiceModel data) {
     service = data;
+    setState(() {});
     setPolylines();
   }
 
@@ -79,6 +81,11 @@ class HomeScreenState extends State<HomeScreen> {
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * asin(sqrt(a));
   }
+
+  StreamSubscription<ServiceStatus> serviceStatusStream =
+      Geolocator.getServiceStatusStream().listen((ServiceStatus status) {
+    print(status);
+  });
 
   Future<Position> _currentLocation() async {
     bool serviceEnabled;
@@ -92,6 +99,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   clearLocation() {
+    service = null;
     polylineCoordinates = [];
     _polylines = {};
     setState(() {});
@@ -110,25 +118,26 @@ class HomeScreenState extends State<HomeScreen> {
       // if (result.points.isNotEmpty) {
       //   for (var point in result.points) {
       polylineCoordinates.addAll([
+        LatLng(double.tryParse(service!.latitude!) ?? 0,
+            double.tryParse(service!.longitude!) ?? 0),
         LatLng(
           userPosition!.latitude,
           userPosition!.longitude,
         ),
-        LatLng(double.tryParse(service!.latitude!) ?? 0,
-            double.tryParse(service!.longitude!) ?? 0)
       ]);
       //   }
       // }
-      setState(() {
-        Polyline polyline = Polyline(
-            polylineId: PolylineId(service!.toString()),
-            color: Commons.primaryColor,
-            points: polylineCoordinates);
 
-        _polylines.add(polyline);
-      });
+      Polyline polyline = Polyline(
+          polylineId: PolylineId(service!.toString()),
+          color: Commons.primaryColor,
+          points: polylineCoordinates);
+
+      _polylines.add(polyline);
+      setState(() {});
     } catch (e) {
       //
+      print(e);
     }
   }
 

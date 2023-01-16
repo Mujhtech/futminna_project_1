@@ -19,9 +19,11 @@ class PropertyCard extends StatelessWidget {
       height: 165,
       width: 165,
       decoration: BoxDecoration(
-          image: DecorationImage(
-              image: CachedNetworkImageProvider(bannerImage),
-              fit: BoxFit.cover),
+          image: bannerImage.isNotEmpty
+              ? DecorationImage(
+                  image: CachedNetworkImageProvider(bannerImage),
+                  fit: BoxFit.cover)
+              : null,
           borderRadius: const BorderRadius.all(Radius.circular(10))),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

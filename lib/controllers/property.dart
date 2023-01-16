@@ -122,6 +122,25 @@ class PropertyController extends ChangeNotifier {
     }
   }
 
+  Future<bool> delete(
+    String id,
+  ) async {
+    try {
+      loading = true;
+      notifyListeners();
+      await _ref.read(propertyRepository).remove(id: id);
+      loading = false;
+      retrieve();
+      notifyListeners();
+      return true;
+    } on CustomException catch (e) {
+      error = e.message;
+      loading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<bool> update(
       String id,
       String userId,
